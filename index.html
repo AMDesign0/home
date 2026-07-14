@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMDesign — סטודיו לעיצוב גרפי</title>
+<meta name="description" content="AMDesign — סטודיו לעיצוב גרפי: זהות מותג, עיצוב דיגיטלי ודפוס.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     AMDesign — Design tokens
+     Ink:    #131316   Paper: #FFFFFF
+     Blue:   #1E3FFF   Yellow: #F5D000   Gray: #8A8A93
+     Display: 'Frank Ruhl Libre' (serif, used bold/large)
+     Body:    'Heebo' (sans, all weights)
+     Signature motif: print-production marks — registration marks,
+     crop marks, ruler ticks and a CMYK swatch bar. These are real
+     tools from a graphic designer's world, used as UI chrome.
+     ============================================================ */
+
+  :root{
+    --ink:#131316;
+    --paper:#ffffff;
+    --blue:#1e3fff;
+    --yellow:#f5d000;
+    --gray:#8a8a93;
+    --line: rgba(19,19,22,0.14);
+    --font-display: 'Frank Ruhl Libre', serif;
+    --font-body: 'Heebo', sans-serif;
+    --container: 1180px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family: var(--font-body);
+    font-weight:400;
+    -webkit-font-smoothing: antialiased;
+  }
+  img{ max-width:100%; display:block; }
+  a{ color:inherit; }
+  section{ position:relative; }
+  .wrap{
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+  @media (min-width: 700px){ .wrap{ padding-inline: 48px; } }
+
+  h1,h2,h3{
+    font-family: var(--font-display);
+    font-weight:700;
+    margin:0;
+    line-height:1.05;
+  }
+
+  .eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-size:.78rem;
+    letter-spacing:.14em;
+    color:var(--gray);
+    font-weight:600;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px; background:var(--gray);
+  }
+
+  /* ---------- ruler strip (authentic design-tool motif) ---------- */
+  .ruler{
+    height: 22px;
+    width:100%;
+    background-image:
+      repeating-linear-gradient(to left, var(--line) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(to left, var(--line) 0 1px, transparent 1px 8px);
+    background-size: 100% 14px, 100% 7px;
+    background-position: top, top;
+    background-repeat: repeat-x;
+    border-bottom:1px solid var(--line);
+  }
+
+  /* ---------- registration mark icon ---------- */
+  .regmark{ color: var(--ink); flex-shrink:0; }
+  .regmark.spin{ animation: spin 12s linear infinite; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .regmark.spin{ animation:none; } }
+
+  /* ---------- crop marks (corners) ---------- */
+  .crop{ position:absolute; width:22px; height:22px; color:var(--ink); opacity:.55; pointer-events:none; }
+  .crop.tl{ top:10px; inset-inline-start:10px; }
+  .crop.tr{ top:10px; inset-inline-end:10px; transform: scaleX(-1); }
+  .crop.bl{ bottom:10px; inset-inline-start:10px; transform: scaleY(-1); }
+  .crop.br{ bottom:10px; inset-inline-end:10px; transform: scale(-1,-1); }
+
+  /* =================== HEADER =================== */
+  header{
+    position: sticky; top:0; z-index:50;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-block: 16px;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none;
+    font-family: var(--font-display);
+    font-size:1.35rem;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .logo .mark{
+    display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px;
+    background:var(--ink); color:var(--paper);
+    font-family:var(--font-display);
+    font-weight:700; font-size:1rem;
+    /* TODO: replace this text mark with an <img src="logo.png"> once the real logo is ready */
+  }
+  nav.links{ display:none; gap:28px; font-size:.92rem; font-weight:500; }
+  nav.links a{ text-decoration:none; position:relative; padding-block:4px; }
+  nav.links a::after{
+    content:""; position:absolute; right:0; left:0; bottom:0; height:2px;
+    background:var(--blue); transform: scaleX(0); transform-origin: left;
+    transition: transform .25s ease;
+  }
+  nav.links a:hover::after{ transform: scaleX(1); }
+  @media (min-width:800px){ nav.links{ display:flex; } }
+  .nav-cta{
+    display:none;
+    font-size:.85rem; font-weight:600;
+    padding:10px 18px;
+    background:var(--ink); color:var(--paper);
+    text-decoration:none;
+  }
+  @media (min-width:800px){ .nav-cta{ display:inline-block; } }
+
+  /* =================== HERO =================== */
+  .hero{
+    padding-block: 64px 80px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-inner{ position:relative; padding: 30px 6px; }
+  .hero h1{
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    max-width: 14ch;
+  }
+  .hero h1 em{
+    font-style:normal;
+    background: linear-gradient(transparent 62%, var(--yellow) 62%);
+  }
+  .hero-sub{
+    max-width:46ch;
+    margin-top:24px;
+    font-size:1.08rem;
+    line-height:1.65;
+    color:#3a3a40;
+  }
+  .hero-ctas{ display:flex; flex-wrap:wrap; gap:14px; margin-top:34px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:14px 26px;
+    font-family:var(--font-body); font-weight:600; font-size:.95rem;
+    text-decoration:none; border:1px solid var(--ink);
+    cursor:pointer;
+    transition: background .2s ease, color .2s ease, transform .15s ease;
+  }
+  .btn-solid{ background:var(--ink); color:var(--paper); }
+  .btn-solid:hover{ background:var(--blue); border-color:var(--blue); transform: translateY(-1px); }
+  .btn-ghost:hover{ background:var(--ink); color:var(--paper); transform: translateY(-1px); }
+
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap:28px;
+    margin-top:56px; padding-top:26px; border-top:1px solid var(--line);
+    font-size:.82rem; color:var(--gray);
+  }
+  .hero-meta strong{ color:var(--ink); display:block; font-family:var(--font-display); font-size:1.3rem; font-weight:700; }
+
+  /* =================== SECTION HEADS =================== */
+  .section{ padding-block: 84px; border-bottom:1px solid var(--line); }
+  .section h2{ font-size: clamp(1.9rem, 3.4vw, 2.7rem); max-width:20ch; }
+  .section-head{ margin-bottom:48px; }
+  .section-head p{ max-width:56ch; color:#3a3a40; margin-top:16px; line-height:1.65; }
+
+  /* =================== ABOUT =================== */
+  .about-grid{ display:grid; gap:40px; }
+  @media (min-width:860px){ .about-grid{ grid-template-columns: 1fr 1fr; align-items:center; } }
+  .about-frame{
+    aspect-ratio: 4/5; background:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--paper); position:relative;
+  }
+  .about-frame span{
+    font-family:var(--font-display); font-size:.85rem; letter-spacing:.08em;
+    color: rgba(255,255,255,.55); text-align:center; padding:0 20px;
+  }
+  /* TODO: replace .about-frame contents with a real portrait / studio photo */
+  .about-text p{ line-height:1.75; color:#3a3a40; margin-bottom:16px; }
+  .about-text p:first-of-type{ font-size:1.1rem; color:var(--ink); }
+
+  /* =================== SERVICES =================== */
+  .services-grid{ display:grid; gap:1px; background:var(--line); border:1px solid var(--line); }
+  @media (min-width:700px){ .services-grid{ grid-template-columns:1fr 1fr; } }
+  .service{ background:var(--paper); padding:36px; }
+  .swatch{ width:16px; height:16px; margin-bottom:22px; }
+  .service h3{ font-size:1.25rem; margin-bottom:10px; }
+  .service p{ color:#3a3a40; line-height:1.6; font-size:.96rem; }
+
+  /* =================== PROCESS =================== */
+  .process-list{ display:grid; gap:0; }
+  .process-item{
+    display:grid; grid-template-columns: 64px 1fr; gap:22px;
+    padding-block:26px; border-top:1px solid var(--line);
+  }
+  .process-item:last-child{ border-bottom:1px solid var(--line); }
+  .process-num{ font-family:var(--font-display); font-size:1rem; color:var(--gray); padding-top:4px; }
+  .process-item h3{ font-size:1.2rem; margin-bottom:8px; }
+  .process-item p{ color:#3a3a40; line-height:1.6; max-width:60ch; }
+
+  /* =================== PORTFOLIO =================== */
+  .portfolio-grid{ display:grid; gap:20px; grid-template-columns: 1fr; }
+  @media (min-width:640px){ .portfolio-grid{ grid-template-columns: 1fr 1fr; } }
+  @media (min-width:960px){ .portfolio-grid{ grid-template-columns: 1fr 1fr 1fr; } }
+  .portfolio-tile{
+    aspect-ratio: 1/1;
+    border: 1.5px dashed var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:12px; text-align:center; padding:20px; color:var(--gray);
+  }
+  .portfolio-tile svg{ opacity:.5; }
+  .portfolio-tile .t1{ font-weight:600; color:var(--ink); font-size:.92rem; }
+  .portfolio-tile .t2{ font-size:.78rem; max-width:22ch; line-height:1.5; }
+  /*
+    TODO — how to add real work:
+    Replace a .portfolio-tile block with, e.g.:
+    <a class="portfolio-real" href="#">
+      <img src="portfolio/project-01.jpg" alt="שם הפרויקט">
+      <div class="cap"><span class="t1">שם הפרויקט</span><span class="t2">זהות מותג · 2026</span></div>
+    </a>
+    and give .portfolio-real the same grid cell — see comment in CSS below for styling.
+  */
+  .portfolio-real{ display:block; text-decoration:none; color:var(--ink); position:relative; overflow:hidden; }
+  .portfolio-real img{ width:100%; height:100%; object-fit:cover; aspect-ratio:1/1; transition: transform .4s ease; }
+  .portfolio-real:hover img{ transform: scale(1.04); }
+  .portfolio-real .cap{ padding-top:12px; }
+  .portfolio-real .t2{ color:var(--gray); font-size:.8rem; }
+
+  /* =================== CONTACT =================== */
+  .contact-grid{ display:grid; gap:40px; }
+  @media (min-width:860px){ .contact-grid{ grid-template-columns: 1.1fr .9fr; } }
+  .contact-cta h2{ font-size: clamp(1.9rem,3.6vw,2.9rem); max-width:16ch; }
+  .contact-cta p{ margin-top:18px; color:#3a3a40; max-width:44ch; line-height:1.65; }
+  .contact-list{ list-style:none; margin:32px 0 0; padding:0; display:grid; gap:18px; }
+  .contact-list a{ text-decoration:none; }
+  .contact-row{
+    display:flex; align-items:center; justify-content:space-between;
+    border-top:1px solid var(--line); padding-block:16px;
+    font-size:1.02rem;
+  }
+  .contact-row:last-child{ border-bottom:1px solid var(--line); }
+  .contact-row .label{ color:var(--gray); font-size:.82rem; }
+  .contact-row strong{ font-weight:600; }
+  .contact-panel{ background:var(--ink); color:var(--paper); padding:40px; }
+  .contact-panel .eyebrow{ color: rgba(255,255,255,.55); }
+  .contact-panel .eyebrow::before{ background: rgba(255,255,255,.55); }
+  .contact-panel p{ line-height:1.7; color: rgba(255,255,255,.75); margin-top:14px; }
+  .contact-panel .btn-solid{ background:var(--paper); color:var(--ink); border-color:var(--paper); margin-top:24px; }
+  .contact-panel .btn-solid:hover{ background:var(--yellow); border-color:var(--yellow); color:var(--ink); }
+
+  /* =================== FOOTER =================== */
+  footer{ padding-block: 40px 60px; }
+  .cmyk-bar{ display:grid; grid-template-columns: repeat(4,1fr); height:10px; margin-bottom:22px; }
+  .cmyk-bar span{ display:block; }
+  .cmyk-bar .c{ background:#00AEEF; }
+  .cmyk-bar .m{ background:#EC008C; }
+  .cmyk-bar .y{ background:#FFF200; }
+  .cmyk-bar .k{ background:var(--ink); }
+  .footer-row{
+    display:flex; flex-wrap:wrap; gap:18px;
+    align-items:center; justify-content:space-between;
+    font-size:.85rem; color:var(--gray);
+  }
+  .footer-links{ display:flex; gap:20px; list-style:none; padding:0; margin:0; }
+  .footer-links a{ text-decoration:none; color:var(--gray); }
+  .footer-links a:hover{ color:var(--ink); }
+
+  ::selection{ background:var(--yellow); color:var(--ink); }
+  :focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+</style>
+</head>
+<body>
+
+<div class="ruler" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap nav-row">
+    <a class="logo" href="#top">
+      <span class="mark">AM</span>
+      AMDesign
+    </a>
+    <nav class="links">
+      <a href="#about">אודות</a>
+      <a href="#services">שירותים</a>
+      <a href="#process">תהליך עבודה</a>
+      <a href="#portfolio">תיק עבודות</a>
+      <a href="#contact">צור קשר</a>
+    </nav>
+    <a class="nav-cta" href="#contact">לתיאום שיחה</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <svg class="crop tl" viewBox="0 0 22 22" fill="none"><path d="M1 22V1H22" stroke="currentColor"/></svg>
+      <svg class="crop tr" viewBox="0 0 22 22" fill="none"><path d="M1 22V1H22" stroke="currentColor"/></svg>
+      <svg class="crop bl" viewBox="0 0 22 22" fill="none"><path d="M1 22V1H22" stroke="currentColor"/></svg>
+      <svg class="crop br" viewBox="0 0 22 22" fill="none"><path d="M1 22V1H22" stroke="currentColor"/></svg>
+
+      <div class="eyebrow">
+        <svg class="regmark spin" width="16" height="16" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor"/><line x1="10" y1="0" x2="10" y2="20" stroke="currentColor"/><line x1="0" y1="10" x2="20" y2="10" stroke="currentColor"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/></svg>
+        סטודיו לעיצוב גרפי
+      </div>
+
+      <h1>עיצוב שמסדר <em>רעיון</em> לתוך צורה</h1>
+
+      <p class="hero-sub">
+        <!-- TODO: ערכו את הטקסט לפי הקול והמותג האישי שלכם -->
+        AMDesign מלווה מותגים ועסקים מהבריף הראשוני ועד לתוצר המוגמר —
+        זהות מותג, עיצוב דיגיטלי ועיצוב דפוס, עם דגש על בהירות ועקביות בכל נקודת מגע.
+      </p>
+
+      <div class="hero-ctas">
+        <a class="btn btn-solid" href="#portfolio">לתיק העבודות</a>
+        <a class="btn btn-ghost" href="#contact">לתיאום שיחה</a>
+      </div>
+
+      <div class="hero-meta">
+        <div><strong>+X</strong>פרויקטים שהושלמו</div>
+        <div><strong>+X</strong>שנות ניסיון</div>
+        <div><strong>100%</strong>עבודה מותאמת אישית</div>
+      </div>
+      <!-- TODO: עדכנו את המספרים בשורת הנתונים למעלה -->
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT ===================== -->
+  <section class="section" id="about">
+    <div class="wrap about-grid">
+      <div class="about-frame">
+        <span>מקום לתמונת פרופיל<br>או תמונת סטודיו</span>
+      </div>
+      <div class="about-text">
+        <div class="eyebrow">אודות</div>
+        <h2 style="margin-bottom:20px;">היכרות קצרה</h2>
+        <!-- TODO: כתבו כאן פסקה אישית אמיתית על הרקע, הגישה והניסיון שלכם -->
+        <p>AMDesign הוקם מתוך אמונה שעיצוב טוב הוא כזה שמבהיר, לא כזה שמסבך. כל פרויקט מתחיל בהקשבה — למותג, לקהל ולמטרה — ומשם נבנה שפה חזותית שמשרתת אותם.</p>
+        <p>העבודה משלבת חשיבה אסטרטגית עם ביצוע מדויק, כדי שכל תוצר — מלוגו ועד קמפיין שלם — יעמוד גם היום וגם בעוד כמה שנים.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SERVICES ===================== -->
+  <section class="section" id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">שירותים</div>
+        <h2>מה כלול בעבודה</h2>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="services-grid">
+        <div class="service">
+          <div class="swatch" style="background:var(--blue)"></div>
+          <h3>זהות מותג</h3>
+          <p>לוגו, פלטת צבעים, טיפוגרפיה ומדריך מותג מלא — הבסיס לכל נקודת מגע עתידית.</p>
+        </div>
+        <div class="service">
+          <div class="swatch" style="background:var(--yellow)"></div>
+          <h3>עיצוב דיגיטלי</h3>
+          <p>תכני רשתות חברתיות, באנרים, ניוזלטרים ועימוד דיגיטלי שנשאר עקבי למותג.</p>
+        </div>
+        <div class="service">
+          <div class="swatch" style="background:var(--ink)"></div>
+          <h3>עיצוב דפוס</h3>
+          <p>כרטיסי ביקור, חוברות, קטלוגים ואריזות — מוכן לדפוס, בלי הפתעות בהדפסה.</p>
+        </div>
+        <div class="service">
+          <div class="swatch" style="background:var(--gray)"></div>
+          <h3>ייעוץ עיצובי</h3>
+          <p>בדיקת עקביות מותג קיים והמלצות לשיפור, למותגים שכבר בדרך אבל צריכים כיוון.</p>
+        </div>
+      </div>
+      <!-- TODO: ניתן להוסיף/להסיר כרטיסי שירות בקלות — כל כרטיס הוא בלוק .service עצמאי -->
+    </div>
+  </section>
+
+  <!-- ===================== PROCESS ===================== -->
+  <section class="section" id="process">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">תהליך עבודה</div>
+        <h2>ארבעה שלבים, בלי הפתעות</h2>
+      </div>
+      <div class="process-list">
+        <div class="process-item">
+          <div class="process-num">01</div>
+          <div><h3>בריף ואפיון</h3><p>פגישת היכרות להבנת המטרות, הקהל והתחרות — הבסיס לכל החלטה עיצובית בהמשך.</p></div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">02</div>
+          <div><h3>קונספט</h3><p>פיתוח כיוונים עיצוביים ראשוניים, לבחירה ומיקוד לפני מעבר לעיצוב מלא.</p></div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">03</div>
+          <div><h3>עיצוב מלא</h3><p>פיתוח הכיוון הנבחר לכדי תוצרים סופיים, עם סבבי הערות ושיפוץ.</p></div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">04</div>
+          <div><h3>מסירה</h3><p>קבצים מוכנים לשימוש בכל הפורמטים הנדרשים, בצירוף הנחיות שימוש קצרות.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PORTFOLIO ===================== -->
+  <section class="section" id="portfolio">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">תיק עבודות</div>
+        <h2>עבודות נבחרות</h2>
+        <p>כאן ייכנס תיק העבודות. כל תא הוא מקום שמור לפרויקט — ראו הנחיה בהערת קוד למטה.</p>
+      </div>
+      <div class="portfolio-grid">
+        <div class="portfolio-tile">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor"/><circle cx="8" cy="10" r="1.6" stroke="currentColor"/><path d="M3 18l5-5 4 4 3-3 6 6" stroke="currentColor"/></svg>
+          <div class="t1">פרויקט לדוגמה</div>
+          <div class="t2">החליפו תא זה בתמונת עבודה + שם הפרויקט</div>
+        </div>
+        <div class="portfolio-tile">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor"/><circle cx="8" cy="10" r="1.6" stroke="currentColor"/><path d="M3 18l5-5 4 4 3-3 6 6" stroke="currentColor"/></svg>
+          <div class="t1">פרויקט לדוגמה</div>
+          <div class="t2">זהות מותג · עיצוב דיגיטלי · דפוס</div>
+        </div>
+        <div class="portfolio-tile">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor"/><circle cx="8" cy="10" r="1.6" stroke="currentColor"/><path d="M3 18l5-5 4 4 3-3 6 6" stroke="currentColor"/></svg>
+          <div class="t1">פרויקט לדוגמה</div>
+          <div class="t2">מומלץ 6-9 עבודות לתחלת הדרך</div>
+        </div>
+        <div class="portfolio-tile">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor"/><circle cx="8" cy="10" r="1.6" stroke="currentColor"/><path d="M3 18l5-5 4 4 3-3 6 6" stroke="currentColor"/></svg>
+          <div class="t1">פרויקט לדוגמה</div>
+          <div class="t2">תמונות מרובעות (1:1) ייראו הכי טוב</div>
+        </div>
+        <div class="portfolio-tile">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor"/><circle cx="8" cy="10" r="1.6" stroke="currentColor"/><path d="M3 18l5-5 4 4 3-3 6 6" stroke="currentColor"/></svg>
+          <div class="t1">פרויקט לדוגמה</div>
+          <div class="t2">אפשר גם לקשר לפרויקט מלא בלחיצה</div>
+        </div>
+        <div class="portfolio-tile">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor"/><circle cx="8" cy="10" r="1.6" stroke="currentColor"/><path d="M3 18l5-5 4 4 3-3 6 6" stroke="currentColor"/></svg>
+          <div class="t1">פרויקט לדוגמה</div>
+          <div class="t2">מקום שמור לעבודה הבאה שלכם</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section class="section" id="contact" style="border-bottom:none;">
+    <div class="wrap contact-grid">
+      <div class="contact-cta">
+        <div class="eyebrow">צור קשר</div>
+        <h2>יש לכם פרויקט?<br>בואו נדבר עליו</h2>
+        <p>ספרו לי קצת על המותג ועל מה שאתם צריכים — אחזור אליכם עם כמה שאלות ותאריך פנוי לשיחת היכרות קצרה.</p>
+        <ul class="contact-list">
+          <li>
+            <a href="mailto:hello@amdesign.co.il">
+              <div class="contact-row"><span><span class="label">אימייל</span><br><strong>hello@amdesign.co.il</strong></span><span>←</span></div>
+            </a>
+          </li>
+          <li>
+            <a href="tel:+972500000000">
+              <div class="contact-row"><span><span class="label">טלפון</span><br><strong>050-000-0000</strong></span><span>←</span></div>
+            </a>
+          </li>
+          <li>
+            <a href="https://instagram.com/amdesign" target="_blank" rel="noopener">
+              <div class="contact-row"><span><span class="label">אינסטגרם</span><br><strong>@amdesign</strong></span><span>←</span></div>
+            </a>
+          </li>
+        </ul>
+        <!-- TODO: עדכנו אימייל, טלפון וקישור אינסטגרם לפרטים האמיתיים -->
+      </div>
+      <div class="contact-panel">
+        <div class="eyebrow">שעות מענה</div>
+        <p>א׳–ה׳, 09:00–18:00.<br>פניות שמתקבלות בסוף השבוע נענות ביום ראשון הקרוב.</p>
+        <a class="btn btn-solid" href="mailto:hello@amdesign.co.il">שלחו מייל עכשיו</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cmyk-bar" aria-hidden="true">
+      <span class="c"></span><span class="m"></span><span class="y"></span><span class="k"></span>
+    </div>
+    <div class="footer-row">
+      <span>© <span id="year"></span> AMDesign — כל הזכויות שמורות</span>
+      <ul class="footer-links">
+        <li><a href="#about">אודות</a></li>
+        <li><a href="#portfolio">תיק עבודות</a></li>
+        <li><a href="#contact">צור קשר</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
